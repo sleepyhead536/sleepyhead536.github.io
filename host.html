@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="css/default.css" rel="stylesheet">
+    </head>
+    <body id="main">
+        <h1>
+            Debugging things
+        </h1>
+        <button onclick="addPlayer()">
+            Add Player
+        </button>
+        <select id="action">
+            <option value="income">Income</option>
+            <option value="foreign-aid">Foreign Aid</option>
+            <option value="coup">Coup</option>
+            <option value="duke">Claim Duke</option>
+        </select>
+        <button onclick="performAction()">
+            Act
+        </button>
+        <h1>
+            Host Setup
+        </h1>
+        <h2 id=server-status>
+            Server Status: Offline
+        </h2>
+        <button onclick="createGame()">
+            Start Game
+        </button>
+        <h1 id="players-header">
+            Players:
+        </h1>
+        <p id="players"></p>
+    </body>
+
+    <script src="js/GameManager.js"></script>
+    <script src="js/Server.js"></script>
+    <script>
+
+        var http = require('http');
+        gameManager = new GameManager();
+        server = null;
+
+        function addPlayer() {
+            var player = new Player();
+            player.setName("Lachlan");
+            gameManager.addPlayer(player);
+            var newPlayer = document.createElement("h2");
+            newPlayer.innerHTML = player.getName();
+            document.getElementById("players").appendChild(newPlayer);
+        }
+
+        function createGame() {
+            document.getElementById("players-header").remove();
+            document.getElementById("players").remove();
+            gameManager.dealPlayers();
+            createDiscardSection();
+            createPlayersSection();
+            renderGameState();
+            startServer();
+        }
+
+        function createDiscardSection() {
+            var discardSection = document.createElement("h1");
+            var discardSectionTitle = document.createTextNode("Discarded Roles");
+            discardSection.appendChild(discardSectionTitle);
+            discardSection.id = "discard";
+            document.getElementById("main").appendChild(discardSection);
+        }
+
+        function createPlayersSection() {
+            var playersSection = document.createElement("h1");
+            var playersSectionTitle = document.createTextNode("Players");
+            playersSection.appendChild(playersSectionTitle);
+            playersSection.id = "players";
+            document.getElementById("main").appendChild(playersSection);
+        }
+
+        function renderGameState() {
+            renderDiscardSection();
+            renderPlayersSection();
+        }
+
+        function renderDiscardSection() {
+        }
+
+        function renderPlayersSection() {
+            players = document.getElementById("players").children;
+            playerTotal = players.length;
+            for (i = 0; i < playerTotal; i++) {
+                players[0].remove();
+            }
+            for (var id in gameManager.players) {
+                createPlayerSection(id);
+            }
+        }
+        function createPlayerSection(playerId) {
+            var playerSection = document.createElement("p");
+            var playerTitle = document.createTextNode(gameManager.players[playerId].getName())
+            var playerCards = document.createTextNode("Cards: " + gameManager.players[playerId].getCards().length)
+            var playerCoins = document.createTextNode("Coins:" + gameManager.players[playerId].getCoins())
+            playerSection.appendChild(playerTitle);
+            playerSection.appendChild(document.createElement("br"));
+            playerSection.appendChild(playerCards);
+            playerSection.appendChild(document.createElement("br"));
+            playerSection.appendChild(playerCoins);
+            document.getElementById("players").appendChild(playerSection);
+        }
+
+        function startServer() {
+            server = http.createServer(messageRecieved);
+            server.listen(3000);
+        }
+
+        function messageRecieved(message, response) {
+            console.log(message);
+            response.write('hello');
+            response.end();
+        }
+
+        function serverClosed(event) {
+            console.log('server closed')
+        }
+
+        function performAction() {
+            var action = document.getElementById("action").value;
+            var activePlayer = gameManager.getPlayerById(1);
+            switch (action) {
+                case "income":
+                    activePlayer.addCoins(1);
+                    break;
+                case "coup":
+                    activePlayer.subtractCoins(7);
+                    break;
+            }
+            gameManager.players[1] = activePlayer;
+            renderGameState();
+        }
+
+    </script>
+</html>
