@@ -15,7 +15,7 @@ body, html {
 .column2 {
   float: left;
   width: 50%;
-  padding: 10px;
+  padding: 15px;
   height: 300px;
 }
 
@@ -23,4 +23,23 @@ body, html {
   content: "";
   display: table;
   clear: both;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 10%;
+  width: 60%;
+}
+
+.parent {
+  position: relative;
+}
+
+.child {
+  position: absolute;
+  top: 50%;
+  height: 100px;
+  margin-top: -50px
 }
