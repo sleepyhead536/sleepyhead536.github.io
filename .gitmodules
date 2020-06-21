@@ -1,0 +1,3 @@
+[submodule "coup"]
+	path = coup
+	url = https://github.com/sleepyhead536/coup.git
